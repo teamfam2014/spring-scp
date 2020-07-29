@@ -17,7 +17,9 @@ public class ScpConfigurationProperties {
     private String host;
     private String port;
     private Map<String,String> sessionConfigs;
-    
+    private String localFilePath;
+    private String remoteFilePath;
+
     public String getKeyFilePath() {
         return keyFilePath;
     }
@@ -65,4 +67,21 @@ public class ScpConfigurationProperties {
     public void setSessionConfigs(Map<String, String> sessionConfigs) {
         this.sessionConfigs = sessionConfigs;
     }
+
+    public String getLocalFilePath() {
+        return localFilePath;
+    }
+
+    public void setLocalFilePath(String localFilePath) {
+        this.localFilePath = localFilePath;
+    }
+
+    public String getRemoteFilePath() {
+        return remoteFilePath;
+    }
+
+    public void setRemoteFilePath(String remoteFilePath) {
+        this.remoteFilePath = remoteFilePath;
+    }
+    
 }
