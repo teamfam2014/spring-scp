@@ -1,4 +1,5 @@
-target/classes/application.properties
-target/classes/com/teamfam/file/springscp/DemoApplication.class
-target/test-classes/com/teamfam/file/springscp/DemoApplicationTests.class
 target
+.classpath
+.factorypath
+.project
+.settings
