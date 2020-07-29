@@ -1,5 +1,7 @@
 package com.teamfam.file.springscp.config;
 
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -14,7 +16,8 @@ public class ScpConfigurationProperties {
     private String userName;
     private String host;
     private String port;
-
+    private Map<String,String> sessionConfigs;
+    
     public String getKeyFilePath() {
         return keyFilePath;
     }
@@ -53,5 +56,13 @@ public class ScpConfigurationProperties {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public Map<String, String> getSessionConfigs() {
+        return sessionConfigs;
+    }
+
+    public void setSessionConfigs(Map<String, String> sessionConfigs) {
+        this.sessionConfigs = sessionConfigs;
     }
 }
