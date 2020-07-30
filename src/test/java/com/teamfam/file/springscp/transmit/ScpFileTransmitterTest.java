@@ -1,13 +1,21 @@
 package com.teamfam.file.springscp.transmit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -169,24 +178,110 @@ public class ScpFileTransmitterTest {
     }     
 
     /**
-     * If there is an issue writing the file name, then the file 
-     * is not transmitted.
+     * If there is an issue writing the file name, then the file is not transmitted.
+     * 
+     * @throws IOException
      */
-
-    /**
-     * If there is an issue while sending the file contents, then
-     * the file is not transmitted.
-     */
+    @DisplayName("Issue Writing Filename")
+    @Test
+    public void writingFileNameIssue() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mock(File.class, Mockito.RETURNS_DEEP_STUBS);
+        mockFilePath(fileToTransmit);
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        OutputStream out = mock(OutputStream.class);
+        InputStream in = mock(InputStream.class);
+        mockStreams(in,out,mockChannel);
+        doThrow(IOException.class)
+        .when(out).write(any());
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+    }    
 
     /**
      * If the file is not found while sending the file contents, then
      * the file is not transmitted.
      */
+    @DisplayName("Issue because File Not Found")
+    @Test
+    public void fileNotFoundIssue() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mockFileStubInvalid();
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        OutputStream out = mock(OutputStream.class);
+        InputStream in = mock(InputStream.class);
+        mockStreams(in,out,mockChannel);
+        mockAckFailOnContentSend(in);
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+    }     
+
+    /**
+     * If there is an issue while sending the file contents, then the file is not
+     * transmitted.
+     */
+    @DisplayName("Issue Sending File Contents")
+    @Test
+    public void writingFileContentsIssue() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mockFileStubValid();
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        OutputStream out = mock(OutputStream.class);
+        InputStream in = mock(InputStream.class);
+        mockStreams(in,out,mockChannel);
+        doNothing()
+        .when(out).write(any(byte[].class));
+        doThrow(IOException.class)
+        .when(out).write(any(byte[].class),anyInt(),anyInt());
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+        verify(out,times(1)).write(any(byte[].class),anyInt(),anyInt());
+        verify(out,times(1)).write(any(byte[].class));
+    }    
 
     /**
      * If the file is proper, and all connections established, then
      * the file is transmitted.
      */
+    @DisplayName("Successful File Send")
+    @Test
+    public void scpFile() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mockFileStubValid();
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        OutputStream out = mock(OutputStream.class);
+        InputStream in = mock(InputStream.class);
+        mockStreams(in,out,mockChannel);
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertTrue(transmitted);
+        verify(out,times(1)).write(any(byte[].class),anyInt(),anyInt());
+        verify(out,times(1)).write(any(byte[].class));
+        verify(in,times(2)).read();
+    }
 
     private void mockBaseScpProperties(){
         Map<String,String> sessionProps = new HashMap<String,String>();
@@ -214,4 +309,32 @@ public class ScpFileTransmitterTest {
         when(mockSession.openChannel(anyString()))
         .thenReturn(mockChannel);
     }
+
+    private void mockStreams(InputStream in, OutputStream out, Channel channel) throws IOException {
+        when(channel.getInputStream())
+        .thenReturn(in);
+        when(channel.getOutputStream())
+        .thenReturn(out);
+    }
+
+    private void mockFilePath(File mockFile){
+        when(mockFile.getAbsolutePath())
+        .thenReturn("/some/path/myFile.txt");
+    }
+
+    private File mockFileStubInvalid(){
+        return new File(this.getClass().getName(),Long.toString(System.currentTimeMillis()));
+    }
+
+    private File mockFileStubValid() throws IOException {
+        return File.createTempFile("stub", ".txt");
+
+    }
+
+    private void mockAckFailOnContentSend(InputStream in) throws IOException {
+        when(in.read())
+        .thenReturn(0)
+        .thenReturn(2)
+        .thenReturn(10); //10 represents the `\n` character
+    }    
 }
