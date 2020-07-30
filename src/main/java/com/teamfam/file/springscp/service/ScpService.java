@@ -8,5 +8,5 @@ public interface ScpService {
     /**
      * Transmit a file to a remote system utlizing SCP.
      */
-    public String scp();
+    public Boolean scpFile(String fileName);
 }
