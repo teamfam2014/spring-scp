@@ -2,6 +2,7 @@ package com.teamfam.file.springscp.transmit;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,15 +40,47 @@ public class ScpFileTransmitter implements FileTransmitter {
     @Override
     public Boolean transmit(File fileToTransmit) {
         Session currentSession = null;
+        Channel currentChannel = null;
+        OutputStream out = null;
+        InputStream in = null;
         Boolean transmitted = Boolean.FALSE;
         try{
             currentSession = createSession();
-
+            currentChannel = getChannel(currentSession,scpConfigurationProperties.getRemoteFilePath());
+            // get I/O streams for remote scp
+            out = currentChannel.getOutputStream();
+            in = currentChannel.getInputStream();
+            currentChannel.connect();
+            transmitted = scpLocalToRemote(out,in,fileToTransmit);
         }catch(JSchException je){
-            LOG.error("Unable to transmit the revstream file through SCP.",je);
+            LOG.error("Unable to transmit the file through SCP.",je);
+        }catch(IOException ioe){
+            LOG.error("Unable to transmit the file through SCP.",ioe);
         }finally{
-            //disconnect session when there is an issue
-            currentSession.disconnect();
+            //close output stream
+            if(out != null){
+                try{
+                    out.close();
+                }catch(IOException ioe){
+                    LOG.error("Unable to close output stream.",ioe);
+                }
+            }
+            //close input stream
+            if(in != null){
+                try{
+                    in.close();
+                }catch(IOException ioe){
+                    LOG.error("Unable to close input stream.",ioe);
+                }
+            }            
+            //close channel
+            if (currentChannel != null){
+                currentChannel.disconnect();
+            }
+            //close session
+            if (currentSession != null){
+                currentSession.disconnect();
+            }            
         }
         return transmitted;
     }
@@ -67,84 +100,72 @@ public class ScpFileTransmitter implements FileTransmitter {
         return session;
     }
 
-    private boolean scpLocalToRemote(Session session, File from, String to, String fileName) throws JSchException, IOException {
-        boolean ptimestamp = true;
+    private Channel getChannel(Session session, String remoteFilePath) throws JSchException{
+                // exec 'scp -t rfile' remotely
+                String command = "scp " + " -t " + remoteFilePath;
+                Channel channel = session.openChannel("exec");
+                ((ChannelExec) channel).setCommand(command);
+                return channel;
+    }
+
+    private boolean scpLocalToRemote(OutputStream out, InputStream in, File localFile) throws JSchException, IOException {
         boolean transmitted = Boolean.FALSE;
-
-        // exec 'scp -t rfile' remotely
-        String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + to;
-        Channel channel = session.openChannel("exec");
-        ((ChannelExec) channel).setCommand(command);
-
-        // get I/O streams for remote scp
-        OutputStream out = channel.getOutputStream();
-        InputStream in = channel.getInputStream();
-
-        channel.connect();
+        sendFileName(localFile,out);
 
         if (checkAck(in) != 0) {
-            System.exit(0);
+            return transmitted;
         }
 
-        if (ptimestamp) {
-            command = "T" + (from.lastModified() / 1000) + " 0";
-            // The access time should be sent here,
-            // but it is not accessible with JavaAPI ;-<
-            command += (" " + (from.lastModified() / 1000) + " 0\n");
-            out.write(command.getBytes());
-            out.flush();
-            if (checkAck(in) != 0) {
-                System.exit(0);
-            }
+        sendFileContents(localFile, out);
+
+        if (checkAck(in) != 0) {
+            return transmitted;
         }
 
-        // send "C0644 filesize filename", where filename should not include '/'
-        long filesize = from.length();
-        command = "C0644 " + filesize + " ";
-        if (from.getAbsolutePath().lastIndexOf('/') > 0) {
-            command += from.getAbsolutePath().substring(from.getAbsolutePath().lastIndexOf('/') + 1);
+        transmitted = Boolean.TRUE;
+        return transmitted;
+    }
+
+    /**
+     * Send "C0644 filesize filename", where filename should not include '/'
+     **/
+    private void sendFileName(File localFile, OutputStream out) throws IOException{
+        long filesize = localFile.length();
+        String command = "C0644 " + filesize + " ";
+        if (localFile.getAbsolutePath().lastIndexOf('/') > 0) {
+            command += localFile.getAbsolutePath().substring(localFile.getAbsolutePath().lastIndexOf('/') + 1);
         } else {
-            command += from.getAbsolutePath();
+            command += localFile.getAbsolutePath();
         }
 
         command += "\n";
         out.write(command.getBytes());
         out.flush();
+    }
 
-        if (checkAck(in) != 0) {
-            System.exit(0);
+    private void sendFileContents(File localFile,OutputStream out) throws IOException{
+        // send a content of local file
+        FileInputStream fis = null;
+        try{
+            fis = new FileInputStream(localFile);
+            byte[] buf = new byte[1024];
+            while (true) {
+                int len = fis.read(buf, 0, buf.length);
+                if (len <= 0) break;
+                out.write(buf, 0, len);
+            }
+    
+            // send '\0'
+            buf[0] = 0;
+            out.write(buf, 0, 1);
+            out.flush();
+        }catch(FileNotFoundException fnfe){
+            LOG.error("File Not Found to send.",fnfe);
+        }finally{
+            if (fis != null){
+                fis.close();
+            } 
         }
-
-        // send a content of lfile
-        FileInputStream fis = new FileInputStream(from);
-        byte[] buf = new byte[1024];
-        while (true) {
-            int len = fis.read(buf, 0, buf.length);
-            if (len <= 0) break;
-            out.write(buf, 0, len); //out.flush();
-        }
-
-        // send '\0'
-        buf[0] = 0;
-        out.write(buf, 0, 1);
-        out.flush();
-
-        if (checkAck(in) != 0) {
-            System.exit(0);
-        }
-        out.close();
-
-        try {
-            if (fis != null) fis.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-
-        transmitted = Boolean.TRUE;
-        channel.disconnect();
-        session.disconnect();
-
-        return transmitted;
     }
 
     private int checkAck(InputStream in) throws IOException {
