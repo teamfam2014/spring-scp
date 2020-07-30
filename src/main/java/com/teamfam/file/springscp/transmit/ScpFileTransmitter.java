@@ -58,7 +58,9 @@ public class ScpFileTransmitter implements FileTransmitter {
             //close output stream
             if(out != null){
                 try{
+                    LOG.debug("Closing OutputStream.");
                     out.close();
+                    LOG.debug("OutputStream Closed.");
                 }catch(IOException ioe){
                     LOG.error("Unable to close output stream.",ioe);
                 }
@@ -66,18 +68,24 @@ public class ScpFileTransmitter implements FileTransmitter {
             //close input stream
             if(in != null){
                 try{
+                    LOG.debug("Closing InputStream.");
                     in.close();
+                    LOG.debug("InputStream Closed.");
                 }catch(IOException ioe){
                     LOG.error("Unable to close input stream.",ioe);
                 }
             }            
             //close channel
             if (currentChannel != null){
+                LOG.debug("Closing JSCH Channel.");
                 currentChannel.disconnect();
+                LOG.debug("JSCH Channel closed.");
             }
             //close session
             if (currentSession != null){
+                LOG.debug("Closing from Session.");
                 currentSession.disconnect();
+                LOG.debug("Session closed.");
             }            
         }
         return transmitted;
@@ -91,22 +99,26 @@ public class ScpFileTransmitter implements FileTransmitter {
         scpConfigurationProperties.getSessionConfigs().forEach((sessionPropKey,sessionPropVal) -> {
             sessionProps.put(sessionPropKey, sessionPropVal);
         });
-
+        LOG.info("Establishing Session.");
         Session session = jsch.getSession(scpConfigurationProperties.getUserName(),scpConfigurationProperties.getHost(),Integer.parseInt(scpConfigurationProperties.getPort()));
         session.setConfig(sessionProps);
         session.connect();
+        LOG.info("Session Established.");
         return session;
     }
 
     private Channel getChannel(Session session, String remoteFilePath) throws JSchException{
                 // exec 'scp -t rfile' remotely
                 String command = "scp " + " -t " + remoteFilePath;
+                LOG.debug("Opening JSCH Channel. command=\"{}\"",command);
                 Channel channel = session.openChannel("exec");
+                LOG.debug("JSCH Channel Open. command=\"{}\"",command);
                 ((ChannelExec) channel).setCommand(command);
                 return channel;
     }
 
     private boolean scpLocalToRemote(OutputStream out, InputStream in, File localFile) throws JSchException, IOException {
+        LOG.info("Preparing SCP Transmission. fileName={}",localFile.getName());
         boolean transmitted = Boolean.FALSE;
         sendFileName(localFile,out);
 
@@ -121,6 +133,7 @@ public class ScpFileTransmitter implements FileTransmitter {
         }
 
         transmitted = Boolean.TRUE;
+        LOG.info("SCP Transmission Complete. fileName={} | transmitted={}",localFile.getName(),transmitted);
         return transmitted;
     }
 
