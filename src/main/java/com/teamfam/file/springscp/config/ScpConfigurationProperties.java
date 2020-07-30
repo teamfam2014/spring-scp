@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author teamfam
  */
-@ConfigurationProperties(prefix = "revstream")
+@ConfigurationProperties(prefix = "scp")
 public class ScpConfigurationProperties {
     private String keyFilePath;
     private String keyPassword;
