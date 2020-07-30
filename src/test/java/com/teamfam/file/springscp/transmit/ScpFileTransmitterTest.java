@@ -1,17 +1,18 @@
 package com.teamfam.file.springscp.transmit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -91,8 +92,6 @@ public class ScpFileTransmitterTest {
         mockBaseScpProperties();
         Session mockSession = mock(Session.class);
         mockSessionCreation(mockSession);
-        Channel mockChannel = mock(Channel.class);
-        mockChannelCreation(mockChannel, mockSession);
         doThrow(JSchException.class)
         .when(mockSession).openChannel(anyString());
         //ACT
@@ -102,19 +101,72 @@ public class ScpFileTransmitterTest {
     }    
 
     /**
-     * If there is an issue opening the output stream, then the 
-     * file is not transmitted.
+     * If there is an issue opening the output stream, then the file is not
+     * transmitted.
+     * 
+     * @throws IOException
      */
+    @DisplayName("Issue getting Output Stream")
+    @Test
+    public void openingOSIssue() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mock(File.class);
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        doThrow(IOException.class)
+        .when(mockChannel).getOutputStream();
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+    }
 
     /**
      * If there is an issue opening the input stream, then the
      * file is not transmitted.
      */
+    @DisplayName("Issue getting Input Stream")
+    @Test
+    public void openingISIssue() throws NumberFormatException, JSchException, IOException {
+        //ARRANGE
+        File fileToTransmit = mock(File.class);
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        doThrow(IOException.class)
+        .when(mockChannel).getInputStream();
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+    }    
 
     /**
      * If there is an issue connecting to the channel, then the
      * file is not transmitted.
      */
+    @DisplayName("Issue Connecting to Channel")
+    @Test
+    public void connectChannelIssue() throws NumberFormatException, JSchException {
+        //ARRANGE
+        File fileToTransmit = mock(File.class);
+        mockBaseScpProperties();
+        Session mockSession = mock(Session.class);
+        mockSessionCreation(mockSession);
+        ChannelExec mockChannel = mock(ChannelExec.class);
+        mockChannelCreation(mockChannel, mockSession);
+        doThrow(JSchException.class)
+        .when(mockChannel).connect();
+        //ACT
+        boolean transmitted = scpFileTransmitter.transmit(fileToTransmit);
+        //ASSERT
+        assertFalse(transmitted);
+    }     
 
     /**
      * If there is an issue writing the file name, then the file 
