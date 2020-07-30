@@ -52,10 +52,8 @@ public class ScpFileTransmitter implements FileTransmitter {
             in = currentChannel.getInputStream();
             currentChannel.connect();
             transmitted = scpLocalToRemote(out,in,fileToTransmit);
-        }catch(JSchException je){
-            LOG.error("Unable to transmit the file through SCP.",je);
-        }catch(IOException ioe){
-            LOG.error("Unable to transmit the file through SCP.",ioe);
+        }catch(Throwable t){
+            LOG.error("Unable to transmit the file through SCP.",t);
         }finally{
             //close output stream
             if(out != null){
@@ -186,7 +184,7 @@ public class ScpFileTransmitter implements FileTransmitter {
             }
             while (c != '\n');
             if (ackByte == 1 || ackByte == 2) { // error
-                LOG.error(sb.toString());
+                LOG.error("The file stream contains the following acknowledgements. in={}", sb.toString());
             }
         }
         return ackByte;
