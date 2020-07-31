@@ -29,6 +29,7 @@ public class JSchConfigurerImpl implements JSchConfigurer {
                     jsch.addIdentity(scpConfigurationProperties.getKeyFilePath());
                 }
             }
+            LOG.info("JSch Configuration Complete.");
         }catch(JSchException je){
             LOG.warn("There was an exception adding the identity to JSCH.",je);
         }
