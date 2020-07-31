@@ -9,14 +9,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Application behaviour test that will test out sending the file to a
  * destination through SCP.
  */
+@Testcontainers
 @SpringBootTest(classes={SpringBootDummyApp.class})
 @ActiveProfiles("test")
 public class ScpFileTransmitterAppBehaviourTest {
+
+    @Container
+    private GenericContainer<?> scpRemote = new GenericContainer<>(
+        new ImageFromDockerfile()
+            .withFileFromClasspath("DockerFile", "images/DockerFile")
+    );
 
     @Autowired
     private ScpService scpService;
