@@ -26,7 +26,7 @@ public class ScpFileTransmitterAppBehaviourTest {
     @Container
     private GenericContainer<?> scpRemote = new GenericContainer<>(
         new ImageFromDockerfile()
-            .withFileFromClasspath("DockerFile", "images/DockerFile")
+            .withFileFromClasspath("Dockerfile", "images/Dockerfile")
     );
 
     @Autowired
