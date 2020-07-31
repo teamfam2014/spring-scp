@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.teamfam.file.springscp.config.ScpAutoConfiguration
