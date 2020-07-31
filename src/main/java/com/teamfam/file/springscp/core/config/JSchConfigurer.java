@@ -1,11 +1,11 @@
-package com.teamfam.file.springscp.core.transmit.config;
+package com.teamfam.file.springscp.core.config;
 
 import com.jcraft.jsch.JSch;
 
 /**
  * Configure the JSch for file transmission.
  */
-public interface JSchConfiguration {
+public interface JSchConfigurer {
    
     /**
      * Configure the JSch prior to use. Can be used to configure

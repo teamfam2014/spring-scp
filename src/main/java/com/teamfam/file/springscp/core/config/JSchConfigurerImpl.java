@@ -1,8 +1,7 @@
-package com.teamfam.file.springscp.core.transmit.config;
+package com.teamfam.file.springscp.core.config;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.teamfam.file.springscp.core.config.ScpConfigurationProperties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JSchConfigurationImpl implements JSchConfiguration {
+public class JSchConfigurerImpl implements JSchConfigurer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JSchConfigurationImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSchConfigurerImpl.class);
 
     @Autowired
     private ScpConfigurationProperties scpConfigurationProperties;
