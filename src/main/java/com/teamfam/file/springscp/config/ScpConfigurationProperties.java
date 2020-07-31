@@ -3,12 +3,14 @@ package com.teamfam.file.springscp.config;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Properties of the SCP transmission such as the key file location, the keyfile password etc.
  * 
  * @author teamfam
  */
+@Configuration
 @ConfigurationProperties(prefix = "scp")
 public class ScpConfigurationProperties {
     private String keyFilePath;
