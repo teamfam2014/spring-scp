@@ -27,7 +27,7 @@ public class ScpFileTransmitterAppBehaviourTest {
     private GenericContainer<?> scpRemote = new GenericContainer<>(
         new ImageFromDockerfile()
             .withFileFromClasspath("Dockerfile", "images/Dockerfile")
-    );
+    ).withExposedPorts(22);
 
     @Autowired
     private ScpService scpService;
