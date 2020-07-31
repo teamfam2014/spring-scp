@@ -3,7 +3,7 @@ package com.teamfam.file.springscp.abt;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.teamfam.app.SpringBootDummyApp;
-import com.teamfam.file.springscp.service.ScpService;
+import com.teamfam.file.springscp.core.service.ScpService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.transmit;
+package com.teamfam.file.springscp.core.transmit;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.teamfam.file.springscp.config.ScpConfigurationProperties;
+import com.teamfam.file.springscp.core.config.ScpConfigurationProperties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

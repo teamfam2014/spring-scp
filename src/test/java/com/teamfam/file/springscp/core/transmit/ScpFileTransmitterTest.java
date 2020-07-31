@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.transmit;
+package com.teamfam.file.springscp.core.transmit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +24,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.teamfam.file.springscp.config.ScpConfigurationProperties;
+import com.teamfam.file.springscp.core.config.ScpConfigurationProperties;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

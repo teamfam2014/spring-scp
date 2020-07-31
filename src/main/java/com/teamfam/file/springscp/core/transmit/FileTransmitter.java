@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.transmit;
+package com.teamfam.file.springscp.core.transmit;
 
 import java.io.File;
 

@@ -1,8 +1,8 @@
-package com.teamfam.file.springscp.transmit.config;
+package com.teamfam.file.springscp.core.transmit.config;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.teamfam.file.springscp.config.ScpConfigurationProperties;
+import com.teamfam.file.springscp.core.config.ScpConfigurationProperties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

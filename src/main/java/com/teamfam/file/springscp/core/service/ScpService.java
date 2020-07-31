@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.service;
+package com.teamfam.file.springscp.core.service;
 
 /**
  * Send a file over using the SCP command.

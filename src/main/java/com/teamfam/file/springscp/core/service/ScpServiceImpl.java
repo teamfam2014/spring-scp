@@ -1,8 +1,8 @@
-package com.teamfam.file.springscp.service;
+package com.teamfam.file.springscp.core.service;
 
 import java.io.File;
 
-import com.teamfam.file.springscp.transmit.FileTransmitter;
+import com.teamfam.file.springscp.core.transmit.FileTransmitter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

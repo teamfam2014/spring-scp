@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.config;
+package com.teamfam.file.springscp.autoconfig;
 
 import com.jcraft.jsch.JSch;
 

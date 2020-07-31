@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp.transmit.config;
+package com.teamfam.file.springscp.core.transmit.config;
 
 import com.jcraft.jsch.JSch;
 
