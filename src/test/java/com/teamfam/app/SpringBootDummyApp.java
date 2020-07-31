@@ -1,4 +1,4 @@
-package com.teamfam.file.springscp;
+package com.teamfam.app;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

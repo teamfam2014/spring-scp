@@ -3,6 +3,7 @@ package com.teamfam.file.springscp.config;
 import com.jcraft.jsch.JSch;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @author teamfam
  */
 @Configuration
+@ComponentScan("com.teamfam.file.springscp")
 public class ScpAutoConfiguration {
 
     @Bean

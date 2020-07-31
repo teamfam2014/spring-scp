@@ -1,8 +1,12 @@
 package com.teamfam.file.springscp.abt;
 
-import com.teamfam.file.springscp.SpringBootDummyApp;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.teamfam.app.SpringBootDummyApp;
+import com.teamfam.file.springscp.service.ScpService;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -13,9 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes={SpringBootDummyApp.class})
 @ActiveProfiles("test")
 public class ScpFileTransmitterAppBehaviourTest {
-   
+
+    @Autowired
+    private ScpService scpService;
+
     @Test
     public void init(){
-        
+        assertNotNull(scpService);
     }
 }
