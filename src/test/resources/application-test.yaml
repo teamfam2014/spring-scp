@@ -1,0 +1,10 @@
+scp:
+    keyFilePath: ./
+    keyPassword: test-me
+    userName: admin
+    host: localhost
+    port: 22
+    localFilePath: ./
+    remoteFilePath: /tmp
+    sessionConfigs:
+        StrictHostKeyChecking: no
