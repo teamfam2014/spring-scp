@@ -1,6 +1,4 @@
 scp:
-    keyFilePath: ./
-    keyPassword: test-me
     userName: admin
     host: localhost
     port: 22
