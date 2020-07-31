@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @author teamfam
  */
 @Configuration
-@ComponentScan("com.teamfam.file.springscp")
+@ComponentScan("com.teamfam.file.springscp.core")
 public class ScpAutoConfiguration {
 
     @Bean
