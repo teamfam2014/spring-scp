@@ -35,12 +35,18 @@ public class ScpFileTransmitterAppBehaviourTest {
 
     @Container
     private GenericContainer<?> scpRemoteContainer = new GenericContainer<>(
-            new ImageFromDockerfile().withFileFromClasspath("Dockerfile", "/images/Dockerfile"))
-                                                                                                .withExposedPorts(22)
-                                                                                                .waitingFor(
-                                                                                                    Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
-                                                                                                )
-                                                                                                .withLogConsumer(new Slf4jLogConsumer(LOG));
+            new ImageFromDockerfile()
+                                     .withFileFromClasspath("ssh_host_rsa_key", "/docker/ssh_host_rsa_key")
+                                     .withFileFromClasspath("ssh_host_rsa_key.pub", "/docker/ssh_host_rsa_key.pub")
+                                     .withFileFromClasspath("sshd_config", "/docker/sshd_config")
+                                     .withFileFromClasspath("authorized_keys", "/docker/authorized_keys")
+                                     .withFileFromClasspath("Dockerfile", "/docker/Dockerfile")
+            )
+                                                                            .withExposedPorts(22)
+                                                                            .waitingFor(
+                                                                                Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
+                                                                            )
+                                                                            .withLogConsumer(new Slf4jLogConsumer(LOG));
                                                                                                 
 
     @Autowired
