@@ -201,5 +201,5 @@ public class ScpFileTransmitter implements FileTransmitter {
             }
         }
         return ackByte;
-    }    
+    }
 }
