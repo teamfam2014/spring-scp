@@ -33,11 +33,15 @@ public class ScpFileTransmitterAppBehaviourTest extends AbstractApplicationBehav
         // ARRANGE
         String localTxtFile = "localfile.txt";
         // ACT
-        boolean transmitted = scpService.scpFile(localTxtFile);
+        boolean transmitted = scpService.scpFile(getResourceFile(localTxtFile));
         // ASSERT
         assertTrue(transmitted);
         ExecResult lsResult = AbstractApplicationBehaviourTest.scpRemoteContainer.execInContainer("ls", "-al", "/tmp");
         String stdOut = lsResult.getStdout();
         assertTrue(stdOut.contains(localTxtFile));
-    }    
+    }
+    
+    private String getResourceFile(String fileName) {
+        return this.getClass().getClassLoader().getResource(fileName).getPath();
+    }
 }
