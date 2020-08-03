@@ -56,7 +56,7 @@ public class JSchConfigurerImplTest {
         //ARRANGE
         JSch jsch = mock(JSch.class);
         when(scpConfigurationProperties.getKeyFilePath())
-        .thenReturn("test-path");
+        .thenReturn("docker/ssh_host_rsa_key.pub");
         //ACT
         jschConfigurerImpl.configure(jsch);
         //ASSERT
@@ -74,7 +74,7 @@ public class JSchConfigurerImplTest {
         //ARRANGE
         JSch jsch = mock(JSch.class);
         when(scpConfigurationProperties.getKeyFilePath())
-        .thenReturn("test-path");
+        .thenReturn("docker/ssh_host_rsa_key.pub");
         when(scpConfigurationProperties.getKeyPassword())
         .thenReturn("test-Pwd");        
         //ACT

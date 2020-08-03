@@ -23,10 +23,10 @@ public class JSchConfigurerImpl implements JSchConfigurer {
             if (StringUtils.isNotBlank(scpConfigurationProperties.getKeyFilePath())){
                 if (StringUtils.isNotBlank(scpConfigurationProperties.getKeyPassword())){
                     LOG.debug("Configuring JSch with key file and password. keyFilePath={} | keyPassword=****",scpConfigurationProperties.getKeyFilePath());
-                    jsch.addIdentity(scpConfigurationProperties.getKeyFilePath(),scpConfigurationProperties.getKeyPassword());
+                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getKeyFilePath()),scpConfigurationProperties.getKeyPassword());
                 }else{
                     LOG.debug("Configuring JSch with key file only. keyFilePath={}",scpConfigurationProperties.getKeyFilePath());
-                    jsch.addIdentity(scpConfigurationProperties.getKeyFilePath());
+                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getKeyFilePath()));
                 }
             }
             LOG.info("JSch Configuration Complete.");
@@ -35,4 +35,8 @@ public class JSchConfigurerImpl implements JSchConfigurer {
         }
     }
     
+    private String getResourceFile(String fileName) {
+        return this.getClass().getClassLoader().getResource(fileName).getPath();
+    }
+
 }
