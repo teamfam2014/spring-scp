@@ -43,9 +43,6 @@ public class ScpFileTransmitterAppBehaviourTest {
                                      .withFileFromClasspath("Dockerfile", "/docker/Dockerfile")
             )
                                                                             .withExposedPorts(22)
-                                                                            .waitingFor(
-                                                                                Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
-                                                                            )
                                                                             .withLogConsumer(new Slf4jLogConsumer(LOG));
                                                                                                 
 
