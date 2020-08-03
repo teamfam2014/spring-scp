@@ -36,7 +36,7 @@ public class ScpFileTransmitterAppBehaviourTest extends AbstractApplicationBehav
         boolean transmitted = scpService.scpFile(localTxtFile);
         // ASSERT
         assertTrue(transmitted);
-        ExecResult lsResult = super.scpRemoteContainer.execInContainer("ls", "-al", "/tmp");
+        ExecResult lsResult = AbstractApplicationBehaviourTest.scpRemoteContainer.execInContainer("ls", "-al", "/tmp");
         String stdOut = lsResult.getStdout();
         assertTrue(stdOut.contains(localTxtFile));
     }    

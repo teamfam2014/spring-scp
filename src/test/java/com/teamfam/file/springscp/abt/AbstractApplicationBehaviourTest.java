@@ -29,7 +29,7 @@ public abstract class AbstractApplicationBehaviourTest {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractApplicationBehaviourTest.class);
 
     @Container
-    protected GenericContainer<?> scpRemoteContainer = new GenericContainer<>(
+    protected static GenericContainer<?> scpRemoteContainer = new GenericContainer<>(
             new ImageFromDockerfile()
                                      .withFileFromClasspath("ssh_host_rsa_key", "/docker/ssh_host_rsa_key")
                                      .withFileFromClasspath("ssh_host_rsa_key.pub", "/docker/ssh_host_rsa_key.pub")
@@ -40,7 +40,8 @@ public abstract class AbstractApplicationBehaviourTest {
                                                                             .withExposedPorts(22)
                                                                             .withLogConsumer(new Slf4jLogConsumer(LOG));
 
-    public class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues values = TestPropertyValues.of(
