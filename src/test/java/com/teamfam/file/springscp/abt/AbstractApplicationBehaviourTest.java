@@ -5,11 +5,9 @@ import com.teamfam.app.SpringBootDummyApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -22,7 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @Testcontainers
 @SpringBootTest(classes = { SpringBootDummyApp.class })
-@ContextConfiguration(initializers = AbstractApplicationBehaviourTest.Initializer.class)
 @ActiveProfiles("test")
 public abstract class AbstractApplicationBehaviourTest {
     
@@ -40,15 +37,9 @@ public abstract class AbstractApplicationBehaviourTest {
                                                                             .withExposedPorts(22)
                                                                             .withLogConsumer(new Slf4jLogConsumer(LOG));
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-        @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues values = TestPropertyValues.of(
-                    "scp.host=" + scpRemoteContainer.getHost(),
-                    "scp.port=" + scpRemoteContainer.getFirstMappedPort()
-            );
-            values.applyTo(configurableApplicationContext);
-        }
+    @DynamicPropertySource
+    public static void populateContainerProperties(DynamicPropertyRegistry registry){
+        registry.add("scp.host", scpRemoteContainer::getHost);
+        registry.add("scp.port", scpRemoteContainer::getFirstMappedPort);
     }
 }
