@@ -1,5 +1,6 @@
 scp:
-    keyFilePath: docker/ssh_host_rsa_key
+    prvKeyFilePath: docker/ssh_host_rsa_key
+    pubKeyFilePath: docker/ssh_host_rsa_key.pub
     userName: root
     host: localhost
     port: 22
