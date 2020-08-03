@@ -5,4 +5,4 @@ scp:
     localFilePath: ./
     remoteFilePath: /tmp
     sessionConfigs:
-        StrictHostKeyChecking: no
+        StrictHostKeyChecking: "no"
