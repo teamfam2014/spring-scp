@@ -13,7 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -25,25 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Application behaviour test that will test out sending the file to a
  * destination through SCP.
  */
-@Testcontainers
-@SpringBootTest(classes = { SpringBootDummyApp.class })
-@ActiveProfiles("test")
-public class ScpFileTransmitterAppBehaviourTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ScpFileTransmitterAppBehaviourTest.class);
-
-    @Container
-    private GenericContainer<?> scpRemoteContainer = new GenericContainer<>(
-            new ImageFromDockerfile()
-                                     .withFileFromClasspath("ssh_host_rsa_key", "/docker/ssh_host_rsa_key")
-                                     .withFileFromClasspath("ssh_host_rsa_key.pub", "/docker/ssh_host_rsa_key.pub")
-                                     .withFileFromClasspath("sshd_config", "/docker/sshd_config")
-                                     .withFileFromClasspath("authorized_keys", "/docker/authorized_keys")
-                                     .withFileFromClasspath("Dockerfile", "/docker/Dockerfile")
-            )
-                                                                            .withExposedPorts(22)
-                                                                            .withLogConsumer(new Slf4jLogConsumer(LOG));
-                                                                                                
+public class ScpFileTransmitterAppBehaviourTest extends AbstractApplicationBehaviourTest{
 
     @Autowired
     private ScpService scpService;
@@ -64,8 +50,8 @@ public class ScpFileTransmitterAppBehaviourTest {
         boolean transmitted = scpService.scpFile(localTxtFile);
         // ASSERT
         assertTrue(transmitted);
-        ExecResult lsResult = scpRemoteContainer.execInContainer("ls", "-al", "/tmp");
+        ExecResult lsResult = super.scpRemoteContainer.execInContainer("ls", "-al", "/tmp");
         String stdOut = lsResult.getStdout();
         assertTrue(stdOut.contains(localTxtFile));
-    }
+    }    
 }
