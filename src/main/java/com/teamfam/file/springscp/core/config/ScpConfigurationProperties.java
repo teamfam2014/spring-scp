@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "scp")
 public class ScpConfigurationProperties {
-    private String keyFilePath;
+    private String prvKeyFilePath;
+    private String pubKeyFilePath;
     private String keyPassword;
     private String userName;
     private String host;
@@ -21,14 +22,6 @@ public class ScpConfigurationProperties {
     private Map<String,String> sessionConfigs;
     private String localFilePath;
     private String remoteFilePath;
-
-    public String getKeyFilePath() {
-        return keyFilePath;
-    }
-
-    public void setKeyFilePath(String keyFilePath) {
-        this.keyFilePath = keyFilePath;
-    }
 
     public String getKeyPassword() {
         return keyPassword;
@@ -84,6 +77,22 @@ public class ScpConfigurationProperties {
 
     public void setRemoteFilePath(String remoteFilePath) {
         this.remoteFilePath = remoteFilePath;
+    }
+
+    public String getPrvKeyFilePath() {
+        return prvKeyFilePath;
+    }
+
+    public void setPrvKeyFilePath(String prvKeyFilePath) {
+        this.prvKeyFilePath = prvKeyFilePath;
+    }
+
+    public String getPubKeyFilePath() {
+        return pubKeyFilePath;
+    }
+
+    public void setPubKeyFilePath(String pubKeyFilePath) {
+        this.pubKeyFilePath = pubKeyFilePath;
     }
     
 }
