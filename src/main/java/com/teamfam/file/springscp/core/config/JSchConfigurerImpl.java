@@ -20,14 +20,16 @@ public class JSchConfigurerImpl implements JSchConfigurer {
     @Override
     public void configure(JSch jsch) {
         try{
-            if (StringUtils.isNotBlank(scpConfigurationProperties.getKeyFilePath())){
+            if (StringUtils.isNotBlank(scpConfigurationProperties.getPrvKeyFilePath()) && StringUtils.isNotBlank(scpConfigurationProperties.getPubKeyFilePath())){
                 if (StringUtils.isNotBlank(scpConfigurationProperties.getKeyPassword())){
-                    LOG.debug("Configuring JSch with key file and password. keyFilePath={} | keyPassword=****",scpConfigurationProperties.getKeyFilePath());
-                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getKeyFilePath()),scpConfigurationProperties.getKeyPassword());
+                    LOG.debug("Configuring JSch with private key and public key files and password. prvKeyFilePath={} | pubKeyFilePath={} | keyPassword=****",scpConfigurationProperties.getPrvKeyFilePath(),scpConfigurationProperties.getPubKeyFilePath());
+                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getPrvKeyFilePath()),getResourceFile(scpConfigurationProperties.getPrvKeyFilePath()),scpConfigurationProperties.getKeyPassword().getBytes());
                 }else{
-                    LOG.debug("Configuring JSch with key file only. keyFilePath={}",scpConfigurationProperties.getKeyFilePath());
-                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getKeyFilePath()));
+                    LOG.debug("Configuring JSch with private key and public key files only. pubKeyFilePath={} | prvKeyFilePath={}",scpConfigurationProperties.getPrvKeyFilePath(),scpConfigurationProperties.getPubKeyFilePath());
+                    jsch.addIdentity(getResourceFile(scpConfigurationProperties.getPrvKeyFilePath()),getResourceFile(scpConfigurationProperties.getPubKeyFilePath()));
                 }
+            }else{
+                LOG.warn("Public and Private Keys not configured.");
             }
             LOG.info("JSch Configuration Complete.");
         }catch(JSchException je){
